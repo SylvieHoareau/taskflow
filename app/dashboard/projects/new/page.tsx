@@ -78,7 +78,7 @@ export default function NewProjectPage() {
             Créer un projet
           </h2>
           <p className="text-gray-500 mb-8">
-            Un projet regroupe toutes les tâches d'un même sujet
+            Un projet regroupe toutes les tâches d`&apos;`un même sujet
           </p>
 
           {/* Erreur */}

@@ -2,6 +2,21 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
+interface Project {
+  id: string
+  name: string
+  description: string | null
+}
+
+interface Task {
+  id: string
+  title: string
+  description: string | null
+  status: 'todo' | 'in_progress' | 'done'
+  priority: 'low' | 'medium' | 'high'
+  due_date: string | null
+}
+
 interface PageProps {
   params: Promise<{ id: string }>
 }
@@ -52,6 +67,12 @@ export default async function ProjectPage({ params }: PageProps) {
               {project.name}
             </h1>
           </div>
+          <Link
+              href={`/dashboard/projects/${id}/edit`}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              ✏️ Modifier
+          </Link>
           <Link
             href={`/dashboard/projects/${id}/tasks/new`}
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
@@ -145,7 +166,7 @@ export default async function ProjectPage({ params }: PageProps) {
 }
 
 // Composant carte de tâche
-function TaskCard({ task, projectId }: { task: any, projectId: string }) {
+function TaskCard({ task, projectId }: { task: Task, projectId: string }) {
   const priorityColors: Record<string, string> = {
     low: 'bg-gray-100 text-gray-600',
     medium: 'bg-yellow-100 text-yellow-700',

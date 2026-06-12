@@ -60,10 +60,16 @@ export default async function TaskPage({ params }: PageProps) {
           <span className="text-gray-300">|</span>
           <span className="text-sm text-gray-500">{project.name}</span>
           <span className="text-gray-300">|</span>
-          <h1 className="text-lg font-semibold text-gray-900 truncate">
-            {task.title}
-          </h1>
-        </div>
+            <h1 className="text-lg font-semibold text-gray-900 truncate">
+                {task.title}
+            </h1>
+            </div>
+            <Link
+            href={`/dashboard/projects/${projectId}/tasks/${taskId}/edit`}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+                ✏️ Modifier
+            </Link>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-8">
