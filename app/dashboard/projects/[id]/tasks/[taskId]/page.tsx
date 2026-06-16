@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import TaskActions from './TaskActions'
+import TaskTimer from './TaskTimer'
 
 interface PageProps {
   params: Promise<{ id: string; taskId: string }>
@@ -101,6 +102,17 @@ export default async function TaskPage({ params }: PageProps) {
                 taskId={taskId}
                 projectId={projectId}
                 currentStatus={task.status}
+              />
+            </div>
+
+            {/* Chronomètre */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-6">
+                ⏱ Chronomètre
+              </h3>
+              <TaskTimer
+                taskId={taskId}
+                initialTimeSpent={task.time_spent || 0}
               />
             </div>
 

@@ -15,6 +15,7 @@ interface Task {
   status: 'todo' | 'in_progress' | 'done'
   priority: 'low' | 'medium' | 'high'
   due_date: string | null
+  time_spent: number // ← ajouté
 }
 
 interface PageProps {
@@ -25,11 +26,9 @@ export default async function ProjectPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createServerSupabaseClient()
 
-  // Vérifie que l'utilisateur est connecté
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  // Récupère le projet
   const { data: project } = await supabase
     .from('projects')
     .select('*')
@@ -38,7 +37,6 @@ export default async function ProjectPage({ params }: PageProps) {
 
   if (!project) notFound()
 
-  // Récupère les tâches du projet
   const { data: tasks } = await supabase
     .from('tasks')
     .select('*')
@@ -67,29 +65,30 @@ export default async function ProjectPage({ params }: PageProps) {
               {project.name}
             </h1>
           </div>
-          <Link
+          <div className="flex items-center gap-3">
+            <Link
               href={`/dashboard/projects/${id}/edit`}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
             >
               ✏️ Modifier
-          </Link>
-          <Link
-            href={`/dashboard/projects/${id}/tasks/new`}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            + Nouvelle tâche
-          </Link>
+            </Link>
+            <Link
+              href={`/dashboard/projects/${id}/tasks/new`}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            >
+              + Nouvelle tâche
+            </Link>
+          </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
 
-        {/* Description du projet */}
         {project.description && (
           <p className="text-gray-500 mb-8">{project.description}</p>
         )}
 
-        {/* Stats rapides */}
+        {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-xl p-4 border-l-4 border-blue-500 shadow-sm text-center">
             <p className="text-2xl font-bold text-gray-900">{todoTasks.length}</p>
@@ -105,10 +104,9 @@ export default async function ProjectPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Colonnes Kanban */}
+        {/* Kanban */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          {/* Colonne À faire */}
           <div className="bg-white rounded-xl shadow-sm p-4">
             <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
@@ -125,7 +123,6 @@ export default async function ProjectPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Colonne En cours */}
           <div className="bg-white rounded-xl shadow-sm p-4">
             <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-yellow-500 inline-block"></span>
@@ -142,7 +139,6 @@ export default async function ProjectPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Colonne Terminées */}
           <div className="bg-white rounded-xl shadow-sm p-4">
             <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
@@ -198,6 +194,18 @@ function TaskCard({ task, projectId }: { task: Task, projectId: string }) {
           </span>
         )}
       </div>
+
+      {/* ← Chronomètre affiché ICI, dans le return */}
+      {task.time_spent > 0 && (
+        <div className="mt-2 text-xs text-gray-400 flex items-center gap-1">
+          <span>⏱</span>
+          <span>
+            {Math.floor(task.time_spent / 3600)}h{' '}
+            {Math.floor((task.time_spent % 3600) / 60)}min
+          </span>
+        </div>
+      )}
+
     </Link>
   )
 }
